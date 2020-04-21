@@ -1,0 +1,87 @@
+
+
+
+一打开AIStuduio项目，请运行：
+pip install pycocotools
+cd d*
+cd d*
+unzip ann*.zip
+unzip val*.zip
+unzip tes*.zip
+unzip image_info*.zip
+unzip train*.zip
+cd ~/w*
+
+
+为了让test_dev.py不报错，编辑下面的文件：
+cd /opt/conda/envs/python35-paddle120-env/lib/python3.7/site-packages/pycocotools/
+vim __init__.py
+
+from .mask import *
+esc + :wq
+
+
+
+看当前文件夹的文件数
+ls -l|grep "^-"| wc -l
+
+
+
+=============训练、验证阶段常用的命令================
+rm -f train.txt
+nohup python train.py >> train.txt 2>&1 &
+
+
+train.py用于训练
+有两种训练模型。0-从头训练，1-读取模型继续训练。通过指定--pattern参数指定。
+如果你要从头训练，键入下面命令：
+rm -f train.txt
+nohup python train.py --initial_step=0 --conf_loss=ce_loss --pattern=0>> train.txt 2>&1 &
+
+
+如果你从转换后的pretrained_resnet50dcn模型训练，键入下面命令：
+rm -f train.txt
+nohup python train.py --initial_step=800000 --steps=830000 --conf_loss=ce_loss --pattern=1 --model_path=./pretrained_resnet50dcn>> train.txt 2>&1 &
+我试过，训练30000步之后就能达到30% mAP以上。
+
+
+如果想接着从上次训练后的模型（比如是step1066300-ep073-loss5.715.pd）继续训练，键入下面命令：
+rm -f train.txt
+nohup python train.py --initial_step=1066300 --steps=1230000 --conf_loss=ce_loss --pattern=1 --model_path=./weights/step1066300-ep073-loss5.715.pd>> train.txt 2>&1 &
+
+
+
+
+
+
+
+
+
+
+rm -f eval.txt
+nohup python eval.py >> eval.txt 2>&1 &
+
+
+rm -f test_dev.txt
+nohup python test_dev.py >> test_dev.txt 2>&1 &
+
+
+
+rm -f a.zip
+zip -r a.zip ./weights/step10663*
+
+
+rm -f r.zip
+zip -r r.zip ./results
+
+rm -f dt.zip
+zip -r dt.zip ./results/detections_test-dev2017_yolactplus_results.json
+
+
+
+
+
+
+
+
+

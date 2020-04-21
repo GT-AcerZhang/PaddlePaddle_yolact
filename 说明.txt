@@ -1,0 +1,61 @@
+output_file.zip是./weights/step1066300-ep073-loss5.715.pd模型对test-dev图片进行预测后提交到比赛
+https://competitions.codalab.org/competitions/20796#participate
+后的成绩结果，达30.5% mAP
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.305
+Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.493
+Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.321
+Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.086
+Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.310
+Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.505
+Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.274
+Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.388
+Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.394
+Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.153
+Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.424
+Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.607
+
+
+
+train.py用于训练
+有两种训练模型。0-从头训练，1-读取模型继续训练。通过指定--pattern参数指定。
+如果你要从头训练，键入下面命令：
+nohup python train.py --initial_step=0 --conf_loss=ce_loss --pattern=0>> train.txt 2>&1 &
+
+
+如果你从转换后的pretrained_resnet50dcn模型训练，键入下面命令：
+nohup python train.py --initial_step=800000 --steps=830000 --conf_loss=ce_loss --pattern=1 --model_path=./pretrained_resnet50dcn>> train.txt 2>&1 &
+我试过，训练30000步之后就能达到30% mAP以上。
+
+
+如果想接着从上次训练后的模型（比如是step1066300-ep073-loss5.715.pd）继续训练，键入下面命令：
+nohup python train.py --initial_step=1066300 --steps=1230000 --conf_loss=ce_loss --pattern=1 --model_path=./weights/step1066300-ep073-loss5.715.pd>> train.txt 2>&1 &
+
+
+
+
+demo.py用于预测images/test/下的图片，结果保存在images/res/目录下。
+一些参数（model_path、backbone_name、obj_threshold、nms_threshold等）在代码中改。
+
+
+test_dev.py用于跑COCO test-dev的图片，最后会生成一个json文件
+results/detections_test-dev2017_yolactplus_results.json
+提交到
+https://competitions.codalab.org/competitions/20796#participate
+进行评分。
+
+
+eval.py用于计算val2017的mAP
+
+
+1_pytorch2paddle.py将yolact作者的pytorch模型转换为paddlepaddle模型。（地址https://github.com/dbolya/yolact）
+再对转换好的模型finetune，减少训练时间。
+唯一import torch的地方。
+这个脚本在本地windows上跑，再把pretrained_resnet50dcn模型上传到AIStudio。如果不允许，请从头训练。
+
+
+
+
+
+
+
+
