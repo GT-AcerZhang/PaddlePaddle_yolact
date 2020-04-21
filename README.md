@@ -19,6 +19,7 @@ train.py用于训练
 如果你要从头训练，键入下面命令：
 ```
 nohup python train.py --initial_step=0 --conf_loss=ce_loss --pattern=0>> train.txt 2>&1 &
+
 ```
 
 如果你从转换后的pretrained_resnet50dcn模型训练，键入下面命令：
