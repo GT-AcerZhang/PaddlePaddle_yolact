@@ -20,6 +20,11 @@ mask AP为30.5。这是飞桨论文复现挑战赛参赛作品其一，并不是
 唯一import torch的地方。
 这个脚本在本地windows上跑，再把pretrained_resnet50dcn模型上传到AIStudio。如果不允许，请从头训练。
 
+## 模型下载
+
+30.5 mask AP：链接：https://pan.baidu.com/s/12jRS1satM_OoJ-dSMatC5Q 
+提取码：z58d 
+
 ## 训练
 train.py用于训练
 有两种训练模型。0-从头训练，1-读取模型继续训练。通过指定--pattern参数指定。
