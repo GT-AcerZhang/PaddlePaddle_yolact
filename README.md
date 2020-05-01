@@ -1,6 +1,8 @@
 # YOLACT
 其实并不是完美复刻，只能说大部分情况跟随了原仓库。
 
+精度更高的yolov3魔改版yolact：https://github.com/miemie2013/yolact
+
 ## 更新日记
 
 2020/04/22:初次见面
