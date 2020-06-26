@@ -30,9 +30,22 @@ if __name__ == '__main__':
     sysstr = platform.system()
     if sysstr == 'Windows':
         use_gpu = False
-        # use_gpu = True
+        use_gpu = True
 
     _decode = Decode(backbone_name, 550, 0.05, 0.5, model_path, file, use_gpu=use_gpu)
+
+    kk = 0
+    # warm up
+    for (root, dirs, files) in os.walk('images/test'):
+        if files:
+            for f in files:
+                path = os.path.join(root, f)
+                image = cv2.imread(path)
+                image, boxes, masks, classes, scores = _decode.detect_image(image, top_k=100, draw=False)
+                kk += 1
+                print(kk)
+                if kk == 10:
+                    break
 
     for (root, dirs, files) in os.walk('images/test'):
         if files:
@@ -42,9 +55,13 @@ if __name__ == '__main__':
                 image = cv2.imread(path)
                 print(path)
                 start2 = time.time()
-                image, boxes, masks, classes, scores = _decode.detect_image(image, top_k=100, draw=True)
+                image, boxes, masks, classes, scores = _decode.detect_image(image, top_k=100, draw=False)
+                # image, boxes, masks, classes, scores = _decode.detect_image(image, top_k=100, draw=True)
                 print('time: {0:.6f}s'.format(time.time() - start2))
                 cv2.imwrite('images/res/' + f, image)
-            print('total time: {0:.6f}s'.format(time.time() - start))
+            cost = time.time() - start
+            num_imgs = 98
+            print('total time: {0:.6f}s'.format(cost))
+            print('Speed: %.6fs per image,  %.1f FPS.' % ((cost / num_imgs), (num_imgs / cost)))
 
 

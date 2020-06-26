@@ -440,23 +440,25 @@ class Decode(object):
         for box, score, cl, ms in zip(boxes, scores, classes, masks):
             bbox_color = colors[cl]
 
-            # 在这里上掩码颜色
-            color = np.array(bbox_color)
-            color = np.reshape(color, (1, 1, 3))
-            ms = np.expand_dims(ms, axis=2)
-            ms = np.tile(ms, (1, 1, 3))
-            color_ms = ms * color * mask_alpha
-            color_im = ms * image * (1 - mask_alpha)
-            image = color_im + color_ms + (1 - ms) * image
-
-            # 画框
+            # 框坐标
             x0, y0, x1, y1 = box
             left = max(0, np.floor(x0 + 0.5).astype(int))
             top = max(0, np.floor(y0 + 0.5).astype(int))
             right = min(image.shape[1], np.floor(x1 + 0.5).astype(int))
             bottom = min(image.shape[0], np.floor(y1 + 0.5).astype(int))
+
+            # 在这里上掩码颜色。咩咩深度优化的画掩码代码。
+            color = np.array(bbox_color)
+            color = np.reshape(color, (1, 1, 3))
+            target_ms = ms[top:bottom, left:right]
+            target_ms = np.expand_dims(target_ms, axis=2)
+            target_ms = np.tile(target_ms, (1, 1, 3))
+            target_region = image[top:bottom, left:right, :]
+            target_region = target_ms * (target_region * (1 - mask_alpha) + color * mask_alpha) + (1 - target_ms) * target_region
+            image[top:bottom, left:right, :] = target_region
+
+            # 画框
             bbox_color = colors[cl]
-            # bbox_thick = 1 if min(image_h, image_w) < 400 else 2
             bbox_thick = 1
             cv2.rectangle(image, (left, top), (right, bottom), bbox_color, bbox_thick)
             bbox_mess = '%s: %.2f' % (self.all_classes[cl], score)
